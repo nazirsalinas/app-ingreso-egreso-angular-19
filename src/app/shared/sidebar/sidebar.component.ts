@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,7 +14,7 @@ export class SidebarComponent {
   // userSubs!: Subscription;
 
   constructor(
-    // private authService: AuthService,
+    private authService: AuthService,
     private router: Router,
     // private store: Store<AppState>
   ) { }
@@ -32,9 +33,9 @@ export class SidebarComponent {
   }
 
   logout() {
-    // this.authService.logout().then( () => {
-    //   this.router.navigate(['/login']);
-    // })
+    this.authService.logout().then( () => {
+      this.router.navigate(['/login']);
+    })
 
   }
 
