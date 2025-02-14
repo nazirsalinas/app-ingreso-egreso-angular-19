@@ -15,10 +15,18 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
 import { getStorage, provideStorage } from '@angular/fire/storage';
 
+import {
+  provideCharts,
+  withDefaultRegisterables,
+  } from 'ng2-charts';
+
+// NGRX
+import { appReducers } from './app.reducer';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideStore(), // Proveer el store
+    provideStore(appReducers), // Proveer el store
     // provideStore(appReducers), // Proveer el store
 
     provideEffects(), // Proveer efectos
@@ -36,7 +44,7 @@ export const appConfig: ApplicationConfig = {
       connectInZone: true // If set to true, the connection is established within the Angular zone
     }), provideFirebaseApp(() => initializeApp({ projectId: "ingreso-egreso-app-ben", appId: "1:898746740542:web:25728175c60b3c50f4066f", databaseURL: "https://ingreso-egreso-app-ben-default-rtdb.firebaseio.com", storageBucket: "ingreso-egreso-app-ben.firebasestorage.app", apiKey: "AIzaSyB2ahty86V3MBla8L1pvYWbOE3gO_1ahcI", authDomain: "ingreso-egreso-app-ben.firebaseapp.com", messagingSenderId: "898746740542", measurementId: "G-S6YJ38EQPX" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideDatabase(() => getDatabase()), provideStorage(() => getStorage()),
     // provideClientHydration(withEventReplay()), provideFirebaseApp(() => initializeApp({ projectId: "ingreso-egreso-app-ben", appId: "1:898746740542:web:25728175c60b3c50f4066f", databaseURL: "https://ingreso-egreso-app-ben-default-rtdb.firebaseio.com", storageBucket: "ingreso-egreso-app-ben.firebasestorage.app", apiKey: "AIzaSyB2ahty86V3MBla8L1pvYWbOE3gO_1ahcI", authDomain: "ingreso-egreso-app-ben.firebaseapp.com", messagingSenderId: "898746740542", measurementId: "G-S6YJ38EQPX" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideDatabase(() => getDatabase()), provideFirebaseApp(() => initializeApp({ projectId: "ingreso-egreso-app-ben", appId: "1:898746740542:web:25728175c60b3c50f4066f", databaseURL: "https://ingreso-egreso-app-ben-default-rtdb.firebaseio.com", storageBucket: "ingreso-egreso-app-ben.firebasestorage.app", apiKey: "AIzaSyB2ahty86V3MBla8L1pvYWbOE3gO_1ahcI", authDomain: "ingreso-egreso-app-ben.firebaseapp.com", messagingSenderId: "898746740542", measurementId: "G-S6YJ38EQPX" })), provideAuth(() => getAuth()), provideFirestore(() => getFirestore()), provideDatabase(() => getDatabase()), provideStorage(() => getStorage())
-
+    provideCharts(withDefaultRegisterables())
   ]
 };
 

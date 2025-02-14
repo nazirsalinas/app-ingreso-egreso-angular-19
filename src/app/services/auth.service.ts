@@ -1,24 +1,40 @@
 import { inject, Injectable } from '@angular/core';
 import { doc, Firestore, setDoc } from '@angular/fire/firestore';
-import { Auth, authState, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, User } from '@angular/fire/auth';
+import {  Auth,
+          authState,
+          createUserWithEmailAndPassword,
+          signInWithEmailAndPassword,
+          updateProfile,
+          User } from '@angular/fire/auth';
 import { Usuario } from '../model/usuario.model';
 import { map, Observable, Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.reducer';
+import * as authActions from '../auth/auth.actions';
+import * as ingresoEgresoActions from '../ingreso-egreso/ingreso-egreso.actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   auth: Auth = inject(Auth);
-  user$: Observable<User | null>;
+  userLogin!: Observable<User | null>;
   firestore: Firestore = inject(Firestore);
+  private _user!: Usuario;
   // private authSubscription: Subscription;
+
+  get user() {
+    return this._user;
+  }
+
 
   constructor(
     // public auth: AngularFireAuth,
     // public auth: Auth = inject(Auth),
     // private firestore: Firestore,
+    private store: Store<AppState>
   ) {
-    this.user$ = authState(this.auth);
+    // this.user = authState(this.auth);
   }
 
   initAuthListener() {
@@ -46,14 +62,26 @@ export class AuthService {
 
     // });
 
-    this.user$ = authState(this.auth);
-    this.user$.subscribe(user => {
+    this.userLogin = authState(this.auth);
+    this.userLogin.subscribe(user => {
        if (user) {
-          console.log('User is logged in:', user);
+          console.log('User is logged in:', user.email);
           // user is logged in
+          const _newUSer: Usuario = {
+            uid: user.uid,
+            nombre: user.displayName,
+            email: user.email,
+          }
+          this._user = Usuario.fromFirebase(_newUSer);
+          console.log('newUser', this._user)
+          this.store.dispatch( authActions.setUser({ user: _newUSer }) );
+          // this._user = user;
+          // this.store.dispatch( authActions.setUser({ user.uid, user.displayName, user }) );
        } else {
          console.log('User is logged out');
          // user is logged out
+        this.store.dispatch( authActions.unSetUser() );
+        this.store.dispatch( ingresoEgresoActions.unSetItems() );
        }
      });
 

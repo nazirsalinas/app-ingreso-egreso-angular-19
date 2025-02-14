@@ -5,6 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2'
+import { AppState } from '../../app.reducer';
+import { Store } from '@ngrx/store';
+import * as ui from '../../shared/ui.actions';
 
 
 @Component({
@@ -16,11 +19,11 @@ import Swal from 'sweetalert2'
 export class RegisterComponent implements OnInit, OnDestroy {
   registroForm!: FormGroup; // Usa el operador de afirmación no nula
   cargando: boolean = false;
-  // uiSubscription!: Subscription; // Usa el operador de afirmación no nula
+  uiSubscription!: Subscription; // Usa el operador de afirmación no nula
 
   constructor( private fb: FormBuilder,
       private authService: AuthService,
-      // private store: Store<AppState>,
+      private store: Store<AppState>,
       private router: Router
     ) {
 
@@ -34,6 +37,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
       correo:   ['', [Validators.required, Validators.email ] ],
       password: ['', Validators.required ],
     });
+    this.uiSubscription = this.store.select('ui')
+      .subscribe( ui => this.cargando = ui.isLoading )
   }
 
 
@@ -41,15 +46,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
     console.log(this.registroForm.value)
     console.log(this.registroForm.valid)
 
-    if ( this.registroForm.invalid ) { return; }
 
-    Swal.fire({
-      title: "Espere por favor",
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    })
-    // this.store.dispatch( ui.isLoading() );
+
+    // Swal.fire({
+    //   title: "Espere por favor",
+    //   didOpen: () => {
+    //     Swal.showLoading();
+    //   },
+    // })
+    this.store.dispatch( ui.isLoading () );
 
     const { nombre, correo, password } = this.registroForm.value;
 
@@ -57,13 +62,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
       .then( credenciales => {
         console.log(credenciales);
 
-        Swal.close();
-        // this.store.dispatch( ui.stopLoading() );
+        // Swal.close();
+        this.store.dispatch( ui.stopLoading() );
 
         this.router.navigate(['/']);
       })
       .catch( err => {
-        // this.store.dispatch( ui.stopLoading() );
+        this.store.dispatch( ui.stopLoading() );
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -73,7 +78,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this.uiSubscription.unsubscribe();
+    this.uiSubscription.unsubscribe();
   }
 
 
